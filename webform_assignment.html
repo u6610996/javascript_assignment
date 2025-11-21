@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Add New Item</title>
+		<style>
+			body { font-family: Arial, sans-serif; padding: 20px; }
+			fieldset { margin-bottom: 16px; }
+			label { display: inline-block; width: 140px; vertical-align: top; }
+			input[type="text"], input[type="email"], textarea, select, input[type="number"] { width: 320px; }
+			.hint { font-size: 0.9em; color: #555; }
+			#response { margin-top: 16px; padding: 12px; border: 1px solid #ddd; background: #f9f9f9; }
+		</style>
+	</head>
+	<body>
+		<h1>Add New Item</h1>
+
+		<form id="productForm"
+					action="https://athiphat-mybackend-01.southeastasia.cloudapp.azure.com/api/product"
+					method="POST"
+					enctype="multipart/form-data">
+
+			<fieldset>
+				<legend>General Info</legend>
+
+				<p>
+					<label for="itemName">Item Name</label>
+					<input type="text" id="itemName" name="itemName" size="50" maxlength="500" value="Sample Travel Mug" required />
+				</p>
+
+				<p>
+					<label for="itemDescription">Description</label>
+					<textarea id="itemDescription" name="itemDescription" rows="4">A stainless steel travel mug, keeps drinks hot or cold.</textarea>
+				</p>
+
+				<p>
+					<label for="coverImage">Cover Image</label>
+					<input type="file" id="coverImage" name="coverImage" accept="image/*" />
+				</p>
+
+				<p>
+					<label for="category">Category</label>
+					<select id="category" name="category">
+						<option value="notSpecified">Not specified</option>
+						<option value="consumption">consumption</option>
+						<option value="household">household</option>
+						<option value="electronic">electronic</option>
+						<option value="gadget">gadget</option>
+					</select>
+				</p>
+
+			</fieldset>
+
+			<fieldset>
+				<legend>Inventory & Pricing</legend>
+
+				<p>
+					<label for="inventoryAmount">Inventory Amount</label>
+					<input type="number" id="inventoryAmount" name="inventoryAmount" min="0" value="150" />
+				</p>
+
+				<p>
+					<label for="listPrice">List Price (USD)</label>
+					<input type="number" id="listPrice" name="listPrice" step="0.01" min="0" value="9.99" />
+				</p>
+
+			</fieldset>
+
+			<fieldset>
+				<legend>Availability</legend>
+
+				<p>
+					<label>Available Store</label>
+					<label><input type="checkbox" name="availableStore[]" value="Bangkok" checked /> Bangkok</label>
+					<label><input type="checkbox" name="availableStore[]" value="Pattaya" /> Pattaya</label>
+					<label><input type="checkbox" name="availableStore[]" value="Phuket" checked /> Phuket</label>
+				</p>
+
+				<p>
+					<label>Status</label>
+					<label><input type="radio" name="status" value="Active" checked /> Active</label>
+					<label><input type="radio" name="status" value="Inactive" /> Inactive</label>
+				</p>
+
+			</fieldset>
+
+			<fieldset>
+				<legend>Staff</legend>
+
+				<p>
+					<label for="staffEmail">Staff Email</label>
+					<input type="email" id="staffEmail" name="staffEmail" placeholder="your.student@university.edu" required />
+					<span class="hint">Enter your student email here before submitting.</span>
+				</p>
+
+			</fieldset>
+
+			<button type="submit">Submit Form</button>
+			<button type="button" id="fetchSubmit">Submit via Fetch (show response)</button>
+
+		</form>
+
+		<div id="response" aria-live="polite"></div>
+
+		<script>
+			// Helper: show result in the page
+			function showResponse(title, content) {
+				const el = document.getElementById('response');
+				el.innerHTML = '<strong>' + title + '</strong><pre>' + content + '</pre>';
+			}
+
+			// Fetch-based submission to show response inline (may be blocked by CORS)
+			document.getElementById('fetchSubmit').addEventListener('click', async () => {
+				const form = document.getElementById('productForm');
+				const staffEmail = document.getElementById('staffEmail').value.trim();
+				if (!staffEmail) {
+					alert('Please enter your student email in the Staff Email field before submitting.');
+					return;
+				}
+
+				const formData = new FormData(form);
+
+				showResponse('Sending...', 'Submitting form to ' + form.action + '\n(If the server blocks cross-origin requests, you will see an error.)');
+
+				try {
+					const res = await fetch(form.action, {
+						method: form.method,
+						body: formData,
+						mode: 'cors'
+					});
+
+					const text = await res.text();
+					showResponse('Response (' + res.status + '):', text);
+				} catch (err) {
+					showResponse('Request error:', String(err));
+				}
+			});
+
+			// Optional: intercept normal form submit to warn about CORS
+			document.getElementById('productForm').addEventListener('submit', (e) => {
+				const staffEmail = document.getElementById('staffEmail').value.trim();
+				if (!staffEmail) {
+					e.preventDefault();
+					alert('Please enter your student email in the Staff Email field before submitting.');
+				} else {
+                    
+				}
+			});
+		</script>
+
+	</body>
+</html>
+
