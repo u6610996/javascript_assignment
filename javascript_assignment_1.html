@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>List 1-20 Skip 5,10,15</title>
+	</head>
+	<body>
+
+		<ul id="list1"></ul>
+
+		<script>
+			// Add your code here
+			(function populateList() {
+				const skip = new Set([5, 10, 15]);
+				const list = document.getElementById('list1');
+				for (let i = 1; i <= 20; i++) {
+					if (skip.has(i)) continue;
+					const li = document.createElement('li');
+					li.textContent = i;
+					list.appendChild(li);
+				}
+			})();
+		</script>
+
+	</body>
+
+</html>
